@@ -1,17 +1,15 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CustomersService } from './customers/customers.service';
 import { CustomersModule } from './customers/customers.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Customer } from './customers/entities/customer.entity';
-import { OrdersService } from './orders/orders.service';
 import { OrdersModule } from './orders/orders.module';
 import { Order } from './orders/entities/order.entity';
-import { ProductsService } from './products/products.service';
-import { ProductsController } from './products/products.controller';
 import { ProductsModule } from './products/products.module';
 import { Product } from './products/entities/product.entity';
+import { DiscountsModule } from './discounts/discounts.module';
+import { Discount } from './discounts/entities/dixcount.entity';
 
 @Module({
   imports: [
@@ -22,7 +20,7 @@ import { Product } from './products/entities/product.entity';
       username: 'postgres',
       password: 'postgres',
       database: 'demo_db',
-      models: [Customer, Order, Product],
+      models: [Customer, Order, Product, Discount],
       autoLoadModels: true,
       synchronize: true,
       logging: false,
@@ -30,6 +28,7 @@ import { Product } from './products/entities/product.entity';
     CustomersModule,
     OrdersModule,
     ProductsModule,
+    DiscountsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

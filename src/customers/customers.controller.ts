@@ -1,4 +1,15 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { CustomersService } from './customers.service';
 
 @Controller('customers')
@@ -46,5 +57,25 @@ export class CustomersController {
       throw new BadRequestException('Amount must be a positive number');
     }
     return this.customersService.getHighValueCustomers(amount);
+  }
+
+  @Post('or-report')
+  async getOrReport(@Body() data: { minSpent?: number; minOrders?: number }) {
+    const minSpent = data.minSpent ?? 0;
+    const minOrders = data.minOrders ?? 0;
+    return this.customersService.getCustomersByOrCondition({
+      minSpent,
+      minOrders,
+    });
+  }
+
+  @Get('top-spender-per-city')
+  async getTopSpenderPerCity() {
+    return this.customersService.getTopSpenderPerCity();
+  }
+
+  @Post('analytics/full')
+  async getFullCustomerAnalytics(@Body() body: { minSpent?: number }) {
+    return this.customersService.getFullCustomerAnalytics(body.minSpent || 0);
   }
 }

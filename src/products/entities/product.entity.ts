@@ -9,6 +9,9 @@ export class Product extends Model<Product> {
   @Column
   price: number;
 
+  @Column
+  category: string;
+
   @HasMany(() => Order, { foreignKey: 'product_id' })
   orders: Order[];
 }
