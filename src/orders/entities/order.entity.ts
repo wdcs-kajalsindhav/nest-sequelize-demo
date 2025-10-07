@@ -7,11 +7,13 @@ import {
 } from 'sequelize-typescript';
 import { Customer } from '../../customers/entities/customer.entity';
 import { Product } from 'src/products/entities/product.entity';
+import { Discount } from 'src/discounts/entities/dixcount.entity';
 
 @Table({ tableName: 'Orders' })
 export class Order extends Model<Order> {
   @ForeignKey(() => Customer)
   @ForeignKey(() => Product)
+    @ForeignKey(()=> Discount)
   @Column
   customer_id: number;
 
@@ -29,4 +31,7 @@ export class Order extends Model<Order> {
 
   @BelongsTo(() => Product)
   product: Product;
+
+  @BelongsTo(() => Discount)
+  discount_amount: number;
 }
