@@ -43,11 +43,6 @@ export class OrdersController {
     });
   }
 
-  @Get('sales-rollup')
-  async getSalesRollup() {
-    return this.orderService.getSalesRollup();
-  }
-
   @Get('weekly-product-sales')
   async getWeeklyProductSales() {
     return this.orderService.getWeeklyProductSales();

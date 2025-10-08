@@ -184,40 +184,12 @@ export class OrdersService {
     }));
   }
 
-  async getSalesRollup() {
-    const query = `
-      SELECT
-        p.category AS category_name,
-        p.name AS product_name,
-        SUM(o.quantity) AS total_items,
-        SUM(o.quantity * p.price - COALESCE(d.discount_amount,0)) AS total_revenue
-      FROM "Orders" o
-      LEFT JOIN "Products" p ON o.product_id = p.id
-      LEFT JOIN "Discounts" d ON d.order_id = o.id
-      GROUP BY ROLLUP(p.category, p.name)
-      ORDER BY category_name NULLS LAST, product_name NULLS LAST;
-    `;
-
-    const results: any[] = await this.orderModel.sequelize.query(query, {
-      type: QueryTypes.SELECT,
-    });
-
-    return results.map((r) => {
-      console.log('🚀 ~ OrdersService ~ getSalesRollup ~ r:', r.product_name);
-      return {
-        ...r,
-        total_items: Number(r.total_items),
-        total_revenue: Number(r.total_revenue),
-      };
-    });
-  }
-
   async getWeeklyProductSales() {
     const query = `
       SELECT 
         p.id AS product_id,
         p.name AS product_name,
-        TO_CHAR(o.order_date, 'IYYY-IW') AS week,
+        TO_CHAR(o.order_date, 'IYYY-IW') AS week, --ISO year-week of the order date 'IW' = ISO week number
         SUM(o.quantity) AS weekly_quantity,
         SUM(o.quantity * p.price - COALESCE(d.discount_amount,0)) AS weekly_revenue,
         SUM(SUM(o.quantity * p.price - COALESCE(d.discount_amount,0))) 
