@@ -31,4 +31,14 @@ export class ProductsController {
   async getFullProductAnalyticsOptimized() {
     return this.productService.getFullProductAnalyticsOptimized();
   }
+
+  @Post('monthly-product-sales')
+  async getMonthlyProductSales(@Body() data: { productId?: number }) {
+    return this.productService.getMonthlyProductSales(data);
+  }
+
+  @Get('product-with-profit')
+  async getProductProfitability() {
+    return this.productService.getProductProfitability();
+  }
 }

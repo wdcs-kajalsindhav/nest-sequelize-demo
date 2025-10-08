@@ -147,4 +147,56 @@ ORDER BY "total_revenue" DESC;
       avg_discount_percent: Number(r.avg_discount_percent),
     }));
   }
+
+  async getMonthlyProductSales(data: { productId?: number }) {
+    const { productId } = data;
+    const where = productId ? `WHERE p.id = ${productId}` : '';
+    const query = `
+    SELECT 
+      p.id AS product_id,
+      p.name AS product_name,
+      TO_CHAR(o.order_date, 'YYYY-MM') AS month,
+      SUM(o.quantity) AS total_quantity,
+      SUM(o.quantity * p.price - COALESCE(d.discount_amount,0)) AS total_revenue
+    FROM "Products" p
+    JOIN "Orders" o ON p.id = o.product_id
+    LEFT JOIN "Discounts" d ON d.order_id = o.id
+    ${where}
+    GROUP BY p.id, p.name, month
+    ORDER BY p.id, month;
+  `;
+    const results: any = await this.productModel.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return results.map((r) => ({
+      ...r,
+      total_quantity: Number(r.total_quantity),
+      total_revenue: Number(r.total_revenue),
+    }));
+  }
+
+  async getProductProfitability() {
+    const query = `
+   SELECT 
+      p.id AS product_id,
+      p.name AS product_name,
+      SUM(o.quantity * p.price - COALESCE(d.discount_amount, 0)) AS revenue,
+      SUM(o.quantity * p.price) AS cost,
+      SUM(o.quantity * p.price - COALESCE(d.discount_amount, 0)) - SUM(o.quantity * p.price) AS profit
+    FROM "Products" p
+    JOIN "Orders" o ON o.product_id = p.id
+    LEFT JOIN "Discounts" d ON d.order_id = o.id
+    GROUP BY p.id, p.name
+    ORDER BY profit DESC;
+  `;
+    const results:any = await this.productModel.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return results.map((r) => ({
+      ...r,
+      revenue: Number(r.revenue),
+      cost: Number(r.cost),
+      profit: Number(r.profit),
+    }));
+  }
 }
